@@ -11,8 +11,8 @@ function SearchBar(prop) {
   let options = {
     "#": [
       "page:", "order:",
-      "id:", "title:",
-      "url:", "domain:",
+      "id:", "title:", "rtitle:",
+      "url:", "rurl:", "domain:",
       "parent_child:", "is_visited:",
       "time_until:"
     ],
