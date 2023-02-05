@@ -2,23 +2,19 @@ import React, { useEffect, useState } from 'react';
 import axios from "axios";
 import SearchBar from '../components/SearchBar'
 import ShareTitleTable from '../components/ShareTitleTable';
+import DBStateDisplay from '../components/DBStateDisplay';
 
 
 function Main() {
   const [ready, setReady] = useState(false);
   const [finished, setFinished] = useState(false);
+  const [dbstate, setDBState] = useState(0);
   const [query, setQuery] = useState({page:0, order:"DESC", is_visited:"unvisited"});
   const [payload, setPayload] = useState(0);
   
+  // fetch before first render
   useEffect(() => {
-    async function initialFetch() {
-      let queryStr = new URLSearchParams(query).toString();
-      let response = await axios.get(`/api/query?${queryStr}`);
-      setPayload(response.data);
-      setFinished(true);
-      setReady(true);
-    }
-    initialFetch();
+    updateDBState();
   }, []);
   
   // update table every time updating state query
@@ -28,6 +24,16 @@ function Main() {
     updateTable();
   }, [query]);
   
+  
+  async function updateDBState() {
+    try {
+      let response = await axios.get(`/api/status`);
+      setDBState(response.data);
+    }
+    catch (err) {
+      console.log(err);
+    }
+  }
   
   async function updateTable() {
     setReady(false);
@@ -120,6 +126,7 @@ function Main() {
   
   return (
     <div className="Main" style={{display:`${ready ? "block" : "none"}`}}>
+      <DBStateDisplay dbstate={dbstate} />
       <div className="SearchForm">
         <h3>Search</h3>
         <form onSubmit={handleSubmit}>
