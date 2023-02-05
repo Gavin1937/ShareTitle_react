@@ -5,7 +5,7 @@ function ShareTitleTable(prop) {
       {
         prop.payload ?
         <div className="table">
-          <h3>Table Size: {prop.payload.sharetitles.length}</h3>
+          <h3>ShareTitle Table (Size: {prop.payload.sharetitles.length})</h3>
           <table>
             <thead>
               <tr>
