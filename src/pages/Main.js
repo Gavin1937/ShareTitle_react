@@ -126,7 +126,10 @@ function Main() {
   
   return (
     <div className="Main" style={{display:`${ready ? "block" : "none"}`}}>
-      <DBStateDisplay dbstate={dbstate} />
+      <div className="DBState">
+        <DBStateDisplay dbstate={dbstate} />
+        <button type="button" onClick={updateDBState}>Refresh</button>
+      </div>
       <div className="SearchForm">
         <h3>Search</h3>
         <form onSubmit={handleSubmit}>
