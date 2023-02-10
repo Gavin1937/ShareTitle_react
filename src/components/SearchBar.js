@@ -38,9 +38,12 @@ function SearchBar(prop) {
     }
     return trig+opt;
   }
+  
   return (
     <div className="SearchBar">
       <TextInput
+        Component={"input"}
+        disabled={prop.disabled}
         changeOnSelect={handleOnSelect}
         trigger={trigger} options={options}
         maxOptions={10} spacer={""}

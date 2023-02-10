@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import axios from "axios";
 import SearchBar from '../components/SearchBar'
 import ShareTitleTable from '../components/ShareTitleTable';
@@ -11,6 +11,12 @@ function Main() {
   const [dbstate, setDBState] = useState(0);
   const [query, setQuery] = useState({page:0, order:"DESC", is_visited:"unvisited"});
   const [payload, setPayload] = useState(0);
+  const [searchBarField, updateSearchBarField] = useReducer(
+    (prev, next) => {
+      return {...prev, ...next};
+    },
+    {"disabled":false}
+  )
   
   // fetch before first render
   useEffect(() => {
@@ -55,11 +61,12 @@ function Main() {
   }
   
   
-  async function handleSubmit(e) {
+  async function handleSearchSubmit(e) {
     e.preventDefault();
     
+    await updateSearchBarField({"disabled":true});
     // parse search value
-    let searchValue = document.querySelector(".SearchBar > textarea").value;
+    let searchValue = document.querySelector(".SearchBar > input").value;
     searchValue = searchValue.trim();
     let _query = {}
     // contains special search command
@@ -81,6 +88,12 @@ function Main() {
     }
     
     await setQuery(_query);
+    await updateSearchBarField({"disabled":false});
+  }
+  
+  async function handleSearchClear(e) {
+    e.preventDefault();
+    window.location.reload(false);
   }
   
   async function handleFilterSelection(event) {
@@ -132,9 +145,14 @@ function Main() {
       </div>
       <div className="SearchForm">
         <h3>Search</h3>
-        <form onSubmit={handleSubmit}>
-          <SearchBar className="SearchBar" width={"80%"} height={"5%"} />
+        <form onSubmit={handleSearchSubmit}>
+          <SearchBar
+            className="SearchBar"
+            width={"80%"} height={"5%"}
+            disabled={searchBarField.disabled}
+          />
           <button type="submit">Submit</button>
+          <button type="input" onClick={handleSearchClear}>Clear</button>
         </form>
       </div>
       <div className="fileter">
