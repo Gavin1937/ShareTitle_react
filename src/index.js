@@ -6,7 +6,8 @@ import {
   Route,
   Navigate
 } from "react-router-dom";
-import Main from './pages/Main'
+import Main from './pages/Main';
+import Login from './pages/Login';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -14,6 +15,7 @@ root.render(
     <Routes>
       <Route exact path="/" element={ <Navigate to="/sharetitle" /> } />
       <Route exact path="/sharetitle" element={ <Main /> } />
+      <Route exact path="/login" element={ <Login /> } />
     </Routes>
   </Router>
 );

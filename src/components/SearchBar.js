@@ -17,7 +17,7 @@ function SearchBar(prop) {
       "time_until:"
     ],
     "#order:": ["ASC", "DESC"],
-    "#parent_child:": ["parent", "child"],
+    "#parent_child:": ["parent", "child", "all"],
     "#is_visited:": ["unvisited", "visited", "all"],
     "#time_until:": ["now"]
   };
