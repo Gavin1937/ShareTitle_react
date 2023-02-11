@@ -2,6 +2,8 @@
 
 A react frontend build for my other project [ShareTitle](https://github.com/Gavin1937/ShareTitle)
 
+* all icons are coming from [fontawesome](https://fontawesome.com/)
+
 # build & deploy
 
 ```sh

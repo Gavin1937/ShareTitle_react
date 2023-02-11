@@ -6,6 +6,11 @@ import {
   Route,
   Navigate
 } from "react-router-dom";
+
+// include bootstrap css
+import 'bootstrap/dist/css/bootstrap.css';
+
+// other pages
 import Main from './pages/Main';
 import Login from './pages/Login';
 

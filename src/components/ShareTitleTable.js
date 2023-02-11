@@ -1,6 +1,12 @@
 import axios from "axios";
 import React, { useState } from "react";
 import "../css/ShareTitleTable.css"
+import { DeleteIcon } from "./Icons";
+
+// bootstrap components
+import Table from 'react-bootstrap/Table';
+import Button from 'react-bootstrap/Button';
+
 
 function ShareTitleTable(prop) {
   
@@ -99,7 +105,7 @@ function ShareTitleTable(prop) {
         payload ?
         <div className="table">
           <h3>ShareTitle Table (Size: {payload.sharetitles.length})</h3>
-          <table>
+          <Table striped bordered hover size="sm">
             <thead>
               <tr>
                 <th>Id</th>
@@ -141,13 +147,21 @@ function ShareTitleTable(prop) {
                         </button>
                       </td>
                       <td>{timeStr}</td>
-                      <td><button type="button" onClick={handleDelete}>delete</button></td>
+                      <td>
+                        <Button
+                          type="button"
+                          variant="danger"
+                          onClick={handleDelete}
+                        >
+                          <DeleteIcon/>
+                        </Button>
+                      </td>
                     </tr>
                   );
                 }
               ) : unll}
             </tbody>
-          </table>
+          </Table>
         </div>
         :
         <p>waiting...</p>

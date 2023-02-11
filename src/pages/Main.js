@@ -1,10 +1,33 @@
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { ReactComponent, useEffect, useReducer, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import axios from "axios";
 import Cookies from 'js-cookie';
+
+// components
 import SearchBar from '../components/SearchBar'
 import ShareTitleTable from '../components/ShareTitleTable';
 import DBStateDisplay from '../components/DBStateDisplay';
+import {
+  ClearIcon,
+  LogoutIcon,
+  NextPageIcon,
+  PrevPageIcon,
+  RefreshIcon,
+  SearchIcon
+} from '../components/Icons';
+
+// bootstrap components
+import {
+  Container,
+  Row,
+  Col,
+  Button,
+  FloatingLabel,
+  Form,
+  Navbar,
+  OverlayTrigger,
+  Tooltip
+} from 'react-bootstrap';
 
 
 function Main() {
@@ -114,6 +137,12 @@ function Main() {
     if (("page" in _query) == false) {
       _query["page"] = 0;
     }
+    else {
+      let pageNum = parseInt(_query["page"]) - 1;
+      if (pageNum <= 0)
+        pageNum = 0;
+      _query["page"] = pageNum; 
+    }
     
     await setQuery(_query);
     await updateSearchBarField({"disabled":false});
@@ -148,7 +177,13 @@ function Main() {
   async function handlePageMove(event) {
     // change page by offset
     let _query = query;
-    let nextPageNum = parseInt(_query.page) + parseInt(event.target.value);
+    let targetVal = 0;
+    if (event.target.className.includes("prev"))
+      targetVal = -1;
+    else if (event.target.className.includes("next"))
+      targetVal = 1;
+    let nextPageNum = parseInt(_query.page) + targetVal;
+    
     if (nextPageNum <= 0) {
       await setQuery(prev => {
         let obj = JSON.parse(JSON.stringify(prev));
@@ -170,53 +205,184 @@ function Main() {
     {
       isLoggedIn ?
       <div className="Main" style={{display:`${ready ? "block" : "none"}`}}>
-        <div className="Logout">
-          <span>Login as: <b>{username ? username : "-"}</b></span>
-          <button type="button" onClick={handleLogout}>Logout</button>
-        </div>
-        <div className="DBState">
-          <DBStateDisplay dbstate={dbstate} />
-          <button type="button" onClick={updateDBState}>Refresh</button>
-        </div>
-        <div className="SearchForm">
-          <h3>Search</h3>
-          <form onSubmit={handleSearchSubmit}>
-            <SearchBar
-              className="SearchBar"
-              width={"80%"} height={"5%"}
-              disabled={searchBarField.disabled}
-            />
-            <button type="submit">Submit</button>
-            <button type="input" onClick={handleSearchClear}>Clear</button>
-          </form>
-        </div>
-        <div className="fileter">
-          <p>filter</p>
-          <select defaultValue="unvisited" onChange={handleFilterSelection}>
-            <option key="1" value="unvisited">unvisited</option>
-            <option key="2" value="visited">visited</option>
-            <option key="3" value="all">all</option>
-          </select>
-        </div>
-        <div className="PageMover-1">
-          <button className="prev" type="button" value="-1" onClick={handlePageMove}>
-            Prev
-          </button>
-          <p>Page: {query.page+1}</p>
-          <button className="next" type="button" value="1" onClick={handlePageMove}>
-            Next
-          </button>
-        </div>
-        {ready && finished && payload ? <ShareTitleTable payload={payload} /> : null}
-        <div className="PageMover-2">
-          <button className="prev" type="button" value="-1" onClick={handlePageMove}>
-            Prev
-          </button>
-          <p>Page: {query.page+1}</p>
-          <button className="next" type="button" value="1" onClick={handlePageMove}>
-            Next
-          </button>
-        </div>
+        
+        <Navbar
+          bg="light"
+          expanded
+          className="sticky-top"
+          style={{
+            marginBottom:"2%"
+          }}
+        >
+          <Container fluid>
+            <Row>
+              
+              <Col
+                className="DBState"
+                md="auto"
+              >
+                <Row>
+                  <Col xs={8}>
+                    <DBStateDisplay dbstate={dbstate} />
+                  </Col>
+                  <Col style={{
+                      marginLeft:"0",
+                      alignContent:"center",
+                      alignSelf:"center"
+                    }}
+                  >
+                    <OverlayTrigger 
+                      placement={"bottom"}
+                      overlay={
+                        <Tooltip id={`tooltip`}>
+                          Refresh Database Status
+                        </Tooltip>
+                      }
+                    >
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={updateDBState}
+                      >
+                        <RefreshIcon/>
+                      </Button>
+                    </OverlayTrigger>
+                  </Col>
+                </Row>
+              </Col>
+              
+              <Col
+                className="SearchForm"
+                md="auto"
+              >
+                <Form
+                  className="d-flex"
+                  onSubmit={handleSearchSubmit}
+                >
+                  <SearchBar
+                    className="SearchBar me-2"
+                    width={"30rem"} height={"100%"}
+                    disabled={searchBarField.disabled}
+                  />
+                  <Button type="submit">
+                    <SearchIcon/>
+                  </Button>
+                  <Button
+                    type="input"
+                    onClick={handleSearchClear}
+                  >
+                    <ClearIcon/>
+                  </Button>
+                </Form>
+              </Col>
+              
+              <Col
+                className="Logout"
+                md="auto"
+              >
+                <Navbar.Text className="mx-2">
+                  Logged in as: <b>{username ? username : "-"}</b>
+                </Navbar.Text>
+                <OverlayTrigger 
+                  className="mx-2"
+                  placement={"bottom"}
+                  overlay={
+                    <Tooltip id={`tooltip`}>
+                      Logout
+                    </Tooltip>
+                  }
+                >
+                  <Button
+                    type="button"
+                    onClick={handleLogout}
+                  >
+                    <LogoutIcon/>
+                  </Button>
+                </OverlayTrigger>
+              </Col>
+              
+            </Row>
+          </Container>
+        </Navbar>
+        
+        <Container
+          fluid
+          style={{
+            marginBottom:"3%"
+          }}
+        >
+          
+          <Row>
+            
+            <Col xs={2} className="filter">
+              <FloatingLabel label="filter">
+                <Form.Select
+                  size="sm"
+                  htmlSize="1"
+                  defaultValue="unvisited"
+                  onChange={handleFilterSelection}
+                >
+                  <option key="1" value="unvisited">unvisited</option>
+                  <option key="2" value="visited">visited</option>
+                  <option key="3" value="all">all</option>
+                </Form.Select>
+              </FloatingLabel>
+            </Col>
+            
+            <Col
+              xs={3}
+              className="PageMover-1"
+              style={{marginLeft: "20%", marginRight: "auto"}}
+            >
+              <Button
+                className="prev me-3"
+                variant="secondary"
+                type="button"
+                onClick={handlePageMove}
+              >
+                <PrevPageIcon/>
+              </Button>
+              <span className="me-3">Page: {query.page+1}</span>
+              <Button
+                className="next me-3"
+                variant="secondary"
+                type="button"
+                onClick={handlePageMove}
+              >
+                <NextPageIcon/>
+              </Button>
+            </Col>
+            
+          </Row>
+          
+          <Row>
+            {ready && finished && payload ? <ShareTitleTable payload={payload} /> : null}
+          </Row>
+          
+          <Row className="justify-content-md-center">
+            <Col xs={3} className="PageMover-2">
+              <Button
+                className="prev me-3"
+                variant="secondary"
+                type="button"
+                onClick={handlePageMove}
+              >
+                <PrevPageIcon/>
+              </Button>
+              <span className="me-3">Page: {query.page+1}</span>
+              <Button
+                className="next me-3"
+                variant="secondary"
+                type="button"
+                onClick={handlePageMove}
+              >
+                <NextPageIcon/>
+              </Button>
+            </Col>
+          </Row>
+          
+        </Container>
+        
       </div>
       :
       <Navigate to="/login" />
