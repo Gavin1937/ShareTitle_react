@@ -16,7 +16,7 @@ import Login from './pages/Login';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <Router>
+  <Router basename="/sharetitle">
     <Routes>
       <Route exact path="/" element={ <Navigate to="/home" /> } />
       <Route exact path="/home" element={ <Main /> } />

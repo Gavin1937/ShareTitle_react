@@ -114,3 +114,20 @@ export class ClearIcon extends React.Component {
     );
   }
 }
+
+import {ReactComponent as Icon8} from '../assets/clock-regular.svg';
+export class ClockIcon extends React.Component {
+  constructor() {
+    super()
+  }
+  render(){
+    return (
+      <Icon8
+        className="icons"
+        fill="white"
+        width="1rem"
+      />
+    );
+  }
+}
+
