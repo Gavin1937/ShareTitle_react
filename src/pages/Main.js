@@ -66,8 +66,6 @@ function Main() {
   // update table every time updating state query
   useEffect(() => {
     async function doUpdateTable() {
-      //! debug message
-      console.log("updating table...", query);
       if (isLoggedIn)
         await updateTable();
     }
@@ -385,7 +383,7 @@ function Main() {
         
       </div>
       :
-      <Navigate to="/login" />
+      <Navigate to="/sharetitle/login" />
     }
     </div>
 );
