@@ -24,3 +24,5 @@ yarn-error.log*
 
 # files
 *.py
+*.service
+*.sh
