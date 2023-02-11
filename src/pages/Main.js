@@ -383,7 +383,7 @@ function Main() {
         
       </div>
       :
-      <Navigate to="/sharetitle/login" />
+      <Navigate to="/login" />
     }
     </div>
 );

@@ -18,9 +18,9 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Router>
     <Routes>
-      <Route exact path="/sharetitle" element={ <Navigate to="/sharetitle/home" /> } />
-      <Route exact path="/sharetitle/home" element={ <Main /> } />
-      <Route exact path="/sharetitle/login" element={ <Login /> } />
+      <Route exact path="/" element={ <Navigate to="/home" /> } />
+      <Route exact path="/home" element={ <Main /> } />
+      <Route exact path="/login" element={ <Login /> } />
     </Routes>
   </Router>
 );

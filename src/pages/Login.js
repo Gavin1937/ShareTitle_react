@@ -69,7 +69,7 @@ function Login() {
           </Col>
         </Row>
         :
-        <Navigate to="/sharetitle/home" />
+        <Navigate to="/home" />
       }
     </Container>
   )
