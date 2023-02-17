@@ -253,6 +253,27 @@ function Main() {
     }
   }
   
+  async function handleAddShareTitle(event) {
+    event.preventDefault();
+    
+    let value = event.target.querySelector('.addShareTitle-input').value;
+    try {
+      let config = {
+        headers: {
+          "Content-Type": "text/plain"
+        },
+        responseType: "json"
+      };
+      await axios.post("/api/sharetitle", value, config);
+      
+      // update whole table
+      await setQuery({page:0, is_visited:"unvisited", order:"DESC"})
+    }
+    catch (err) {
+      console.log(err);
+    }
+  }
+  
   return (
     <div>
     {
@@ -413,6 +434,19 @@ function Main() {
             </Col>
             
           </Row>
+          
+            <Form className="addShareTitle py-2" onSubmit={handleAddShareTitle}>
+              <Row>
+                <Col xs={4} lg={4} md={4}>
+                <Form.Control className="addShareTitle-input" type="text" placeholder="Add new ShareTitle" />
+                </Col>
+                <Col xs={1} lg={1} md={1}>
+                <Button variant="primary" className="addShareTitle-submit" type="submit">
+                  Add
+                </Button>
+                </Col>
+              </Row>
+            </Form>
           
           <Row style={{width:"100%"}}>
             {ready && finished && payload ? <ShareTitleTable payload={payload} /> : null}
