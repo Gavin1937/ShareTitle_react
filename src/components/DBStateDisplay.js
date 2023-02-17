@@ -55,7 +55,7 @@ function DBStateDisplay(prop) {
           }
         >
           <span>
-            <Button style={{width:"165%"}} disabled size="sm" variant="secondary">
+            <Button disabled size="sm" variant="secondary">
               {prop.dbstate ? prop.dbstate.sharetitle_count : "-"}
             </Button>
           </span>
@@ -71,7 +71,7 @@ function DBStateDisplay(prop) {
           }
         >
           <span>
-            <Button style={{width:"165%"}} disabled size="sm" variant="success">
+            <Button disabled size="sm" variant="success">
               {prop.dbstate ? prop.dbstate.sharetitle_visited_count : "-"}
             </Button>
           </span>
@@ -87,7 +87,7 @@ function DBStateDisplay(prop) {
           }
         >
           <span>
-            <Button style={{width:"165%"}} disabled size="sm" variant="danger">
+            <Button disabled size="sm" variant="danger">
               {prop.dbstate ? prop.dbstate.sharetitle_unvisited_count : "-"}
             </Button>
           </span>

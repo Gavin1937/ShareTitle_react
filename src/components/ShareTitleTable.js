@@ -105,7 +105,7 @@ function ShareTitleTable(prop) {
         payload ?
         <div className="table">
           <h3>ShareTitle Table (Size: {payload.sharetitles.length})</h3>
-          <Table striped bordered hover size="sm">
+          <Table striped bordered responsive hover size="sm">
             <thead>
               <tr>
                 <th>Id</th>

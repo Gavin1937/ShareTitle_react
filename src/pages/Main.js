@@ -26,7 +26,8 @@ import {
   Form,
   Navbar,
   OverlayTrigger,
-  Tooltip
+  Tooltip,
+  Nav
 } from 'react-bootstrap';
 
 
@@ -206,13 +207,16 @@ function Main() {
         
         <Navbar
           bg="light"
-          expanded
-          className="sticky-top"
+          expand="lg"
+          sticky="top"
           style={{
-            marginBottom:"2%"
+            marginBottom:"2%",
           }}
         >
           <Container fluid>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="m-auto">
             <Row>
               
               <Col
@@ -259,7 +263,7 @@ function Main() {
                 >
                   <SearchBar
                     className="SearchBar me-2"
-                    width={"30rem"} height={"100%"}
+                    width={"100%"} height={"100%"}
                     disabled={searchBarField.disabled}
                   />
                   <Button type="submit">
@@ -300,6 +304,8 @@ function Main() {
               </Col>
               
             </Row>
+            </Nav>
+          </Navbar.Collapse>
           </Container>
         </Navbar>
         
@@ -353,7 +359,7 @@ function Main() {
             
           </Row>
           
-          <Row>
+          <Row style={{width:"100%"}}>
             {ready && finished && payload ? <ShareTitleTable payload={payload} /> : null}
           </Row>
           
