@@ -44,7 +44,13 @@ function Main() {
       return {...prev, ...next};
     },
     {"disabled":false}
-  )
+  );
+  const [addShareTitleErr, updateAddShareTitleErr] = useReducer(
+    (prev, next) => {
+      return {...next};
+    },
+    {"ready":false, "msg":""}
+  );
   
   // fetch before first render
   useEffect(() => {
@@ -256,7 +262,15 @@ function Main() {
   async function handleAddShareTitle(event) {
     event.preventDefault();
     
-    let value = event.target.querySelector('.addShareTitle-input').value;
+    await updateAddShareTitleErr({"ready": false, "msg":""});
+    let inputBar = event.target.querySelector('.addShareTitle-input');
+    let value = inputBar.value.trim();
+    inputBar.value = "";
+    if (value.length <= 0) {
+      await updateAddShareTitleErr({"ready": true, "msg":"Empty input"});
+      return;
+    }
+    
     try {
       let config = {
         headers: {
@@ -271,6 +285,8 @@ function Main() {
     }
     catch (err) {
       console.log(err);
+      let respMsg = err.response.data.error;
+      await updateAddShareTitleErr({"ready": true, "msg":respMsg});
     }
   }
   
@@ -436,14 +452,23 @@ function Main() {
           </Row>
           
             <Form className="addShareTitle py-2" onSubmit={handleAddShareTitle}>
+              <span
+                style={{
+                  color:"red",
+                  fontWeight:"bold",
+                  marginBottom:"10%"
+                }}
+              >
+                {addShareTitleErr.ready ? addShareTitleErr.msg : ""}
+              </span>
               <Row>
                 <Col xs={4} lg={4} md={4}>
-                <Form.Control className="addShareTitle-input" type="text" placeholder="Add new ShareTitle" />
+                  <Form.Control className="addShareTitle-input" type="text" placeholder="Add new ShareTitle" />
                 </Col>
                 <Col xs={1} lg={1} md={1}>
-                <Button variant="primary" className="addShareTitle-submit" type="submit">
-                  Add
-                </Button>
+                  <Button variant="primary" className="addShareTitle-submit" type="submit">
+                    Add
+                  </Button>
                 </Col>
               </Row>
             </Form>
