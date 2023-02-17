@@ -37,7 +37,7 @@ function Main() {
   const [ready, setReady] = useState(false);
   const [finished, setFinished] = useState(false);
   const [dbstate, setDBState] = useState(0);
-  const [query, setQuery] = useState({page:0, order:"DESC", is_visited:"unvisited"});
+  const [query, setQuery] = useState({page:0, is_visited:"unvisited", order:"DESC"});
   const [payload, setPayload] = useState(0);
   const [searchBarField, updateSearchBarField] = useReducer(
     (prev, next) => {
@@ -66,12 +66,19 @@ function Main() {
   
   // update table every time updating state query
   useEffect(() => {
-    async function doUpdateTable() {
+    //!for debug only
+    // console.log(query);
+    //!for debug only
+    async function doUpdateQuery() {
+      // modify filter base on "is_visited" field
+      document.querySelector(".filter-form").value = query["is_visited"];
+      
+      // update table content
       if (isLoggedIn)
         await updateTable();
     }
     
-    doUpdateTable().catch(console.log);
+    doUpdateQuery().catch(console.log);
   }, [query]);
   
   
@@ -111,39 +118,97 @@ function Main() {
   }
   
   
-  async function handleSearchSubmit(e) {
-    e.preventDefault();
-    
-    await updateSearchBarField({"disabled":true});
-    // parse search value
-    let searchValue = document.querySelector(".SearchBar > input").value;
-    searchValue = searchValue.trim();
+  // parse search value String to Object
+  function searchValueS2O(val) {
+    let searchValue = val.trim();
     let _query = {}
-    // contains special search command
+    
+    // 1st character is special search character
     if (searchValue[0] == "#") {
-      let list = await Array.from(
+      let list = Array.from(
         searchValue.substr(1).split("#"),
         (i) => (i.trim().split(":"))
       );
       for (let l of list) {
-        _query[l[0]] = l[1]
+        // handle special cases
+        if (l[0].toLowerCase() == "page") {
+          _query["page"] = parseInt(l[1]) - 1;
+        }
+        // general case
+        else {
+          _query[l[0]] = l[1]
+        }
       }
     }
-    // no special search command, assume searching title
+    // 1st character isn't special search character, assume searchValue starts with title
     else if (searchValue.length > 0) {
-      _query["title"] = searchValue.trim();
+      let pos = searchValue.indexOf("#");
+      if (pos == -1) // only contain title
+        _query["title"] = searchValue.trim();
+      else { // contain extra special search characters after title
+        let titleStr = searchValue.substr(0, pos).trim();
+        let paramStr = searchValue.substr(pos).trim();
+        _query = {"title":titleStr, ...searchValueS2O(paramStr)};
+      }
     }
-    if (("page" in _query) == false) {
-      _query["page"] = 0;
-    }
-    else {
-      let pageNum = parseInt(_query["page"]) - 1;
+    
+    // add "page" to query
+    if ("page" in _query) {
+      let pageNum = parseInt(_query["page"]);
       if (pageNum <= 0)
         pageNum = 0;
       _query["page"] = pageNum; 
     }
+    else
+      _query["page"] = 0;
     
+    // add "is_visited" to query
+    if ("is_visited" in _query) {
+      let _queryVal = _query["is_visited"].toLowerCase();
+      if (_queryVal != "all" && _queryVal != "visited" && _queryVal != "unvisited")
+        _query["is_visited"] = "all";
+      else
+        _query["is_visited"] = _queryVal;
+    }
+    else
+      _query["is_visited"] = "all";
+    
+    // add "order" to query
+    if ("order" in _query) {
+      let _queryVal = _query["order"].toUpperCase();
+      if (_queryVal != "ASC" && _queryVal != "DESC")
+        _query["order"] = "DESC";
+      else
+        _query["order"] = _queryVal;
+    }
+    else
+      _query["order"] = "DESC";
+    
+    return _query;
+  }
+  
+  // parse search value Object to String
+  function searchValueO2S(val) {
+    let output = "";
+    
+    for (let key in val) {
+      output += `#${key}:${val[key]} `
+    }
+    
+    return output;
+  }
+  
+  async function handleSearchSubmit(e) {
+    e.preventDefault();
+    
+    await updateSearchBarField({"disabled":true});
+    
+    // update search query
+    let searchValue = document.querySelector(".SearchBar > input").value;
+    searchValue = searchValue.trim();
+    let _query = searchValueS2O(searchValue);
     await setQuery(_query);
+    
     await updateSearchBarField({"disabled":false});
   }
   
@@ -154,23 +219,12 @@ function Main() {
   
   async function handleFilterSelection(event) {
     let value = event.target.value;
-    if (value === "visited" || value === "unvisited") {
-      await setQuery(prev => {
-        let obj = JSON.parse(JSON.stringify(prev));
-        delete obj.is_visited;
-        delete obj.page;
-        return {"is_visited":value, "page":0, ...obj};
-      });
-    }
-    else if (value === "all") {
-      // remove is_visited key from object
-      await setQuery(prev => {
-        let obj = JSON.parse(JSON.stringify(prev));
-        delete obj.is_visited;
-        delete obj.page;
-        return {"page":0, ...obj};
-      });
-    }
+    await setQuery(prev => {
+      let obj = JSON.parse(JSON.stringify(prev));
+      delete obj.is_visited;
+      delete obj.page;
+      return {"is_visited":value, "page":0, ...obj};
+    });
   }
   
   async function handlePageMove(event) {
@@ -321,6 +375,7 @@ function Main() {
             <Col xs={2} className="filter">
               <FloatingLabel label="filter">
                 <Form.Select
+                  className="filter-form"
                   size="sm"
                   htmlSize="1"
                   defaultValue="unvisited"
