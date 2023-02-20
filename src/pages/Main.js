@@ -172,12 +172,12 @@ function Main() {
     if ("is_visited" in _query) {
       let _queryVal = _query["is_visited"].toLowerCase();
       if (_queryVal != "all" && _queryVal != "visited" && _queryVal != "unvisited")
-        _query["is_visited"] = "all";
+        _query["is_visited"] = "unvisited";
       else
         _query["is_visited"] = _queryVal;
     }
     else
-      _query["is_visited"] = "all";
+      _query["is_visited"] = "unvisited";
     
     // add "order" to query
     if ("order" in _query) {
