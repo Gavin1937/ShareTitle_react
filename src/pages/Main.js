@@ -1,4 +1,4 @@
-import React, { ReactComponent, useEffect, useReducer, useState } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import axios from "axios";
 import Cookies from 'js-cookie';
@@ -67,6 +67,9 @@ function Main() {
       }
     }
     
+    // add global "/" key press detection
+    document.addEventListener('keydown', handleGlobalKeypress);
+    
     doInit().catch(console.log);
   }, []);
   
@@ -87,6 +90,24 @@ function Main() {
     doUpdateQuery().catch(console.log);
   }, [query]);
   
+  
+  async function handleGlobalKeypress(event) {
+    let currentKeyCode = event.code;
+    let searchBarField = document.querySelector(".SearchBar > input");
+    let currentFocusOnSearchBar = (document.activeElement === searchBarField);
+    
+    // focus on the search bar if pressing "/" and currently not focused on it
+    if (currentKeyCode == "Slash" && !currentFocusOnSearchBar) {
+      event.preventDefault();
+      let navbarButton = document.querySelector('nav > div > button.navbar-toggler');
+      let isCollapsed = Array.from(navbarButton.classList).find(s => s == 'collapsed');
+      let isLargeWindow = (window.innerWidth >= 992);
+      // expand navbar if needed
+      if (isCollapsed && !isLargeWindow)
+        await navbarButton.click();
+      await searchBarField.focus();
+    }
+  }
   
   async function handleLogout() {
     await Cookies.remove("username");
