@@ -94,10 +94,10 @@ function Main() {
   async function handleGlobalKeypress(event) {
     let currentKeyCode = event.code;
     let searchBarField = document.querySelector(".SearchBar > input");
-    let currentFocusOnSearchBar = (document.activeElement === searchBarField);
+    let currentFocusOnInput = (document.activeElement.tagName == 'INPUT');
     
-    // focus on the search bar if pressing "/" and currently not focused on it
-    if (currentKeyCode == "Slash" && !currentFocusOnSearchBar) {
+    // focus on the search bar if pressing "/" and currently not focused on an input
+    if (currentKeyCode == "Slash" && !currentFocusOnInput) {
       event.preventDefault();
       let navbarButton = document.querySelector('nav > div > button.navbar-toggler');
       let isCollapsed = Array.from(navbarButton.classList).find(s => s == 'collapsed');
