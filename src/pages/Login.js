@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useSearchParams } from 'react-router-dom';
 import MD5 from 'crypto-js/md5';
 import Cookies from 'js-cookie';
 
@@ -16,6 +16,9 @@ function Login() {
   
   const [redirectHome, setRedirectHome] = useState(false);
   const [ready, setReady] = useState(true);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [code, setCode] = useState(null);
+  const [showWarning, setShowWarning] = useState({display:"none"})
   
   useEffect(() => {
     async function doInit() {
@@ -23,6 +26,12 @@ function Login() {
       let _auth_hash = await Cookies.get("auth_hash");
       if (_username && _auth_hash)
         await setRedirectHome(true);
+      let loccode = await searchParams.get("code");
+      await setCode(loccode);
+      if (loccode)
+        await setShowWarning({display:"block"});
+      else
+        await setShowWarning({display:"none"});
     }
     
     doInit().catch(console.log);
@@ -52,6 +61,7 @@ function Login() {
         <Row className="my-5">
           <Col md={{span:4,offset:3}}>
             <h3 className="mb-3">Login Page</h3>
+            <h5 style={{color:"red",showWarning}}>{code == "IA" ? "Invalid Authentication" : null}</h5>
             <Form className="LoginForm" id="login" onSubmit={handleLogin}>
               
               <Form.Group className="mb-3" controlId="username">

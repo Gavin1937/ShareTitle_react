@@ -33,6 +33,7 @@ import {
 
 function Main() {
   const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [loginFailed, setLoginFailed] = useState(false);
   const [username, setUsername] = useState(null);
   const [ready, setReady] = useState(false);
   const [finished, setFinished] = useState(false);
@@ -63,6 +64,7 @@ function Main() {
         await updateDBState();
       }
       else {
+        await setLoginFailed(true);
         await setIsLoggedIn(false);
       }
     }
@@ -90,6 +92,17 @@ function Main() {
     doUpdateQuery().catch(console.log);
   }, [query]);
   
+  
+  async function handleError(error) {
+    let errmsg = error.response.data.error;
+    console.log(errmsg);
+    if (errmsg.includes("Authen")) {
+      await Cookies.remove("username");
+      await Cookies.remove("auth_hash");
+      await setLoginFailed(true);
+      await setIsLoggedIn(false);
+    }
+  }
   
   async function handleGlobalKeypress(event) {
     let currentKeyCode = event.code;
@@ -121,7 +134,7 @@ function Main() {
       setDBState(response.data);
     }
     catch (err) {
-      console.log(err);
+      handleError(err);
     }
   }
   
@@ -138,7 +151,7 @@ function Main() {
       setFinished(true);
     }
     catch (err) {
-      console.log(err);
+      handleError(err);
     }
     
     setReady(true);
@@ -305,7 +318,7 @@ function Main() {
       await setQuery({page:0, is_visited:"unvisited", order:"DESC"})
     }
     catch (err) {
-      console.log(err);
+      handleError(err);
       let respMsg = err.response.data.error;
       await updateAddShareTitleErr({"ready": true, "msg":respMsg});
     }
@@ -524,7 +537,7 @@ function Main() {
         
       </div>
       :
-      <Navigate to="/login" />
+      <Navigate to={loginFailed?"/login?code=IA":"/login"} />
     }
     </div>
 );
