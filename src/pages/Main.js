@@ -96,7 +96,7 @@ function Main() {
   async function handleError(error) {
     let errmsg = error.response.data.error;
     console.log(errmsg);
-    if (errmsg.includes("Authen")) {
+    if (errmsg && errmsg.includes && errmsg.includes("Authen")) {
       await Cookies.remove("username");
       await Cookies.remove("auth_hash");
       await setLoginFailed(true);
