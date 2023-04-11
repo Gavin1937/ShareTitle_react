@@ -11,7 +11,7 @@ function SearchBar(prop) {
   ];
   let options = {
     "#": [
-      "page:", "order:",
+      "page:", "limit:", "order:",
       "id:",
       "id_greater_then:", "id_greater_eq:", 
       "id_less_then:", "id_less_eq:",
