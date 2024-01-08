@@ -12,7 +12,7 @@ function DBStateDisplay(prop) {
   function parseTimeStamp(timestamp) {
     let time = new Date(parseInt(timestamp)*1000);
     let year = time.getFullYear().toString().padStart(4, '0');
-    let month = time.getMonth().toString().padStart(2, '0');
+    let month = (time.getMonth()+1).toString().padStart(2, '0');
     let date = time.getDate().toString().padStart(2, '0');
     let hour = time.getHours().toString().padStart(2, '0');
     let minute = time.getMinutes().toString().padStart(2, '0');
