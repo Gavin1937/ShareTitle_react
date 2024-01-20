@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+
 // bootstrap components
 import Button from 'react-bootstrap/Button';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
@@ -8,6 +10,25 @@ import Col from 'react-bootstrap/Col';
 import { ClockIcon } from './Icons';
 
 function DBStateDisplay(prop) {
+  
+  const [pressingButton, setPressingButton] = useState(false);
+  
+  useEffect(() => {
+    prop.dbstate.sharetitle_visited_count_perc = Math.round(
+      prop.dbstate.sharetitle_visited_count / prop.dbstate.sharetitle_count * 10000
+    ) / 100;
+    prop.dbstate.sharetitle_unvisited_count_perc = Math.round(
+      prop.dbstate.sharetitle_unvisited_count / prop.dbstate.sharetitle_count * 10000
+    ) / 100;
+    console.log(prop.dbstate);
+    let elem = document.querySelector('.DBStateDisplay');
+    elem.addEventListener('mousedown', () => {
+      setPressingButton(true);
+    });
+    elem.addEventListener('mouseup', () => {
+      setPressingButton(false);
+    });
+  }, [])
   
   function parseTimeStamp(timestamp) {
     let time = new Date(parseInt(timestamp)*1000);
@@ -34,7 +55,12 @@ function DBStateDisplay(prop) {
             }
           >
             <span>
-              <Button disabled size="sm" variant="info">
+              <Button
+                disabled
+                id="database-status"
+                size="sm"
+                variant="info"
+              >
                 <ClockIcon/>
               </Button>
             </span>
@@ -55,8 +81,13 @@ function DBStateDisplay(prop) {
           }
         >
           <span>
-            <Button disabled size="sm" variant="secondary">
-              {prop.dbstate ? prop.dbstate.sharetitle_count : "-"}
+            <Button
+              disabled
+              id="all-sharetitles"
+              size="sm"
+              variant="secondary"
+            >
+              {prop.dbstate ? (pressingButton ? `100.00%` : prop.dbstate.sharetitle_count) : "-"}
             </Button>
           </span>
         </OverlayTrigger>
@@ -71,8 +102,13 @@ function DBStateDisplay(prop) {
           }
         >
           <span>
-            <Button disabled size="sm" variant="success">
-              {prop.dbstate ? prop.dbstate.sharetitle_visited_count : "-"}
+            <Button
+              disabled
+              id="visited-sharetitles"
+              size="sm"
+              variant="success"
+            >
+              {prop.dbstate ? (pressingButton ? `${prop.dbstate.sharetitle_visited_count_perc}%` : prop.dbstate.sharetitle_visited_count) : "-"}
             </Button>
           </span>
         </OverlayTrigger>
@@ -87,8 +123,13 @@ function DBStateDisplay(prop) {
           }
         >
           <span>
-            <Button disabled size="sm" variant="danger">
-              {prop.dbstate ? prop.dbstate.sharetitle_unvisited_count : "-"}
+            <Button
+              disabled
+              id="unvisited-sharetitles"
+              size="sm"
+              variant="danger"
+            >
+              {prop.dbstate ? (pressingButton ? `${prop.dbstate.sharetitle_unvisited_count_perc}%` : prop.dbstate.sharetitle_unvisited_count) : "-"}
             </Button>
           </span>
         </OverlayTrigger>
