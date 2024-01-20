@@ -37,7 +37,7 @@ function Main() {
   const [username, setUsername] = useState(null);
   const [ready, setReady] = useState(false);
   const [finished, setFinished] = useState(false);
-  const [dbstate, setDBState] = useState(0);
+  const [dbstate, setDBState] = useState(null);
   const [query, setQuery] = useState({page:0, is_visited:"unvisited", order:"DESC"});
   const [payload, setPayload] = useState(0);
   const [searchBarField, updateSearchBarField] = useReducer(

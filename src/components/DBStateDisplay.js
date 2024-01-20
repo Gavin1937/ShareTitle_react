@@ -14,13 +14,14 @@ function DBStateDisplay(prop) {
   const [pressingButton, setPressingButton] = useState(false);
   
   useEffect(() => {
-    prop.dbstate.sharetitle_visited_count_perc = Math.round(
-      prop.dbstate.sharetitle_visited_count / prop.dbstate.sharetitle_count * 10000
-    ) / 100;
-    prop.dbstate.sharetitle_unvisited_count_perc = Math.round(
-      prop.dbstate.sharetitle_unvisited_count / prop.dbstate.sharetitle_count * 10000
-    ) / 100;
-    console.log(prop.dbstate);
+    if (prop.dbstate) {
+      prop.dbstate.sharetitle_visited_count_perc = Math.round(
+        prop.dbstate.sharetitle_visited_count / prop.dbstate.sharetitle_count * 10000
+      ) / 100;
+      prop.dbstate.sharetitle_unvisited_count_perc = Math.round(
+        prop.dbstate.sharetitle_unvisited_count / prop.dbstate.sharetitle_count * 10000
+      ) / 100;
+    }
     let elem = document.querySelector('.DBStateDisplay');
     elem.addEventListener('mousedown', () => {
       setPressingButton(true);
