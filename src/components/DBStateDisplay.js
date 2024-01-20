@@ -13,6 +13,7 @@ function DBStateDisplay(prop) {
   
   const [pressingButton, setPressingButton] = useState(false);
   
+  // update on prop.dbstate changes
   useEffect(() => {
     if (prop.dbstate) {
       prop.dbstate.sharetitle_visited_count_perc = Math.round(
@@ -29,7 +30,7 @@ function DBStateDisplay(prop) {
     elem.addEventListener('mouseup', () => {
       setPressingButton(false);
     });
-  }, [])
+  }, [prop.dbstate]);
   
   function parseTimeStamp(timestamp) {
     let time = new Date(parseInt(timestamp)*1000);
