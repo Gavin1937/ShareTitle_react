@@ -125,7 +125,7 @@ function ShareTitleTable(prop) {
                   let visitColor = `${data.is_visited == 0 ? 'red' : 'green'}`;
                   let time = new Date(parseInt(data.time)*1000);
                   let year = time.getFullYear().toString().padStart(4, '0');
-                  let month = time.getMonth().toString().padStart(2, '0');
+                  let month = (time.getMonth()+1).toString().padStart(2, '0');
                   let date = time.getDate().toString().padStart(2, '0');
                   let hour = time.getHours().toString().padStart(2, '0');
                   let minute = time.getMinutes().toString().padStart(2, '0');
