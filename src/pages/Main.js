@@ -309,7 +309,7 @@ function Main() {
       await updateAddShareTitleErr({"ready": true, "msg":"Empty input"});
       return;
     }
-    console.log('Add New ShareTitle:\n', value);
+    console.log(`Add New ShareTitle:\n${value}`);
     
     try {
       let config = {
@@ -352,7 +352,7 @@ function Main() {
           }
           
           value = `${title} - ${url}`;
-          console.log('Add New ShareTitle:\n', value);
+          console.log(`Add New ShareTitle:\n${value}`);
         }
         catch (err) {
           let respMsg = "Cannot parse input file, it must be an Internet Shortcut File";
