@@ -340,6 +340,7 @@ function Main() {
       }
       var reader = new FileReader();
       reader.onload = async function(e) {
+        let value = null;
         try {
           let txt = e.target.result;
           let title = file.name.substr(0,file.name.lastIndexOf('.'));
@@ -350,7 +351,7 @@ function Main() {
             title = title + ' - X';
           }
           
-          let value = `${title} - ${url}`;
+          value = `${title} - ${url}`;
           console.log('Add New ShareTitle:\n', value);
         }
         catch (err) {
