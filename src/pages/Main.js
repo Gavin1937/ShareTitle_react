@@ -1,6 +1,8 @@
 import React, { useEffect, useReducer, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import axios from "axios";
+import Dropzone from 'react-dropzone';
+import '../css/dropzone.css';
 import Cookies from 'js-cookie';
 
 // components
@@ -27,7 +29,8 @@ import {
   Navbar,
   OverlayTrigger,
   Tooltip,
-  Nav
+  Nav,
+  Collapse
 } from 'react-bootstrap';
 
 
@@ -35,6 +38,8 @@ function Main() {
   const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [loginFailed, setLoginFailed] = useState(false);
   const [username, setUsername] = useState(null);
+  const [expandAddShareTitle, setExpandAddShareTitle] = useState(false);
+  const [expandAddShareTitleText, setExpandAddShareTitleText] = useState("Add New ShareTitle");
   const [ready, setReady] = useState(false);
   const [finished, setFinished] = useState(false);
   const [dbstate, setDBState] = useState(null);
@@ -304,6 +309,7 @@ function Main() {
       await updateAddShareTitleErr({"ready": true, "msg":"Empty input"});
       return;
     }
+    console.log('Add New ShareTitle:\n', value);
     
     try {
       let config = {
@@ -321,6 +327,56 @@ function Main() {
       handleError(err);
       let respMsg = err.response.data.error;
       await updateAddShareTitleErr({"ready": true, "msg":respMsg});
+    }
+  }
+  
+  async function handleUploadShareTitle(files) {
+    await updateAddShareTitleErr({"ready": false, "msg":""});
+    
+    for (const file of files) {
+      if (!file) {
+        await updateAddShareTitleErr({"ready": true, "msg":"Cannot open file"});
+        return;
+      }
+      var reader = new FileReader();
+      reader.onload = async function(e) {
+        try {
+          let txt = e.target.result;
+          let title = file.name.substr(0,file.name.lastIndexOf('.'));
+          let url = txt.match(/.*URL=(.*)/m)[1];
+          
+          // handle special twitter case, where title is too long
+          if (url.includes('twitter.com') && !title.endsWith('- X')) {
+            title = title + ' - X';
+          }
+          
+          let value = `${title} - ${url}`;
+          console.log('Add New ShareTitle:\n', value);
+        }
+        catch (err) {
+          let respMsg = "Cannot parse input file, it must be an Internet Shortcut File";
+          await updateAddShareTitleErr({"ready": true, "msg":respMsg});
+        }
+        
+        try {
+          let config = {
+            headers: {
+              "Content-Type": "text/plain"
+            },
+            responseType: "json"
+          };
+          await axios.post("/api/sharetitle", value, config);
+          
+          // update whole table
+          await setQuery({page:0, is_visited:"unvisited", order:"DESC"})
+        }
+        catch (err) {
+          handleError(err);
+          let respMsg = err.response.data.error;
+          await updateAddShareTitleErr({"ready": true, "msg":respMsg});
+        }
+      }
+      reader.readAsText(file);
     }
   }
   
@@ -485,7 +541,22 @@ function Main() {
             
           </Row>
           
-            <Form className="addShareTitle py-2" onSubmit={handleAddShareTitle}>
+          <Button
+            variant="success"
+            type="button"
+            key="add-sharetitle-input"
+            id="add-sharetitle-input"
+            className="add-sharetitle-input mt-2"
+            onClick={_ => {
+              setExpandAddShareTitle(!expandAddShareTitle);
+              setExpandAddShareTitleText(expandAddShareTitle ? "Add New ShareTitle" : "Hide Menu");
+            }}
+            aria-expanded={expandAddShareTitle}
+          >
+            {expandAddShareTitleText}
+          </Button>
+          <Collapse className="postShareTitle-collapse" in={expandAddShareTitle}>
+            <div>
               <span
                 style={{
                   color:"red",
@@ -495,17 +566,42 @@ function Main() {
               >
                 {addShareTitleErr.ready ? addShareTitleErr.msg : ""}
               </span>
-              <Row>
-                <Col xs={4} lg={4} md={4}>
-                  <Form.Control className="addShareTitle-input" type="text" placeholder="Add new ShareTitle" />
-                </Col>
-                <Col xs={1} lg={1} md={1}>
-                  <Button variant="primary" className="addShareTitle-submit" type="submit">
-                    Add
-                  </Button>
-                </Col>
-              </Row>
-            </Form>
+              <Form className="addShareTitle py-2" onSubmit={handleAddShareTitle}>
+                <Row>
+                  <Col xs={4} lg={4} md={4}>
+                    <Form.Control className="addShareTitle-input" type="text" placeholder="Add New ShareTitle" />
+                  </Col>
+                  <Col xs={1} lg={1} md={1}>
+                    <Button variant="primary" className="addShareTitle-submit" type="submit">
+                      Add
+                    </Button>
+                  </Col>
+                </Row>
+              </Form>
+              <Form className="uploadShareTitle py-2">
+                <Row style={{display:"flex", alignItems: "center"}}>
+                  <Col xs={4} lg={4} md={4}>
+                    <Dropzone
+                      onDrop={handleUploadShareTitle}
+                      multiple={true}
+                    >
+                      {({getRootProps, getInputProps}) => (
+                        <section id="dropzone-section" >
+                          <div
+                            className="dropzone"
+                            {...getRootProps()}
+                          >
+                            <input {...getInputProps()} />
+                            <p>Drag or Click to upload internet shortcut files</p>
+                          </div>
+                        </section>
+                      )}
+                    </Dropzone>
+                  </Col>
+                </Row>
+              </Form>
+            </div>
+          </Collapse>
           
           <Row style={{width:"100%"}}>
             {ready && finished && payload ? <ShareTitleTable payload={payload} /> : null}
